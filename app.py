@@ -8,23 +8,23 @@ import pandas as pd
 
 # --- APP CONFIGURATION ---
 st.set_page_config(
-    page_title="HemaScan AI | Clinical Suite",
+    page_title="HemaScan AI | M.A.M. Engineering",
     page_icon="🩸",
     layout="wide"
 )
 
-# --- ADVANCED PASTEL MEDICAL STYLING ---
+# --- ADVANCED PASTEL AI/DS STYLING ---
 st.markdown("""
     <style>
     /* Main Background */
-    .stApp { background-color: #f0f7f7; }
+    .stApp { background-color: #f2f7f7; }
     
     /* Header Styling */
     .main-header {
         background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
         padding: 2.5rem;
         border-radius: 20px;
-        border-bottom: 6px solid #80cbc4;
+        border-bottom: 6px solid #4db6ac;
         text-align: center;
         margin-bottom: 2rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -45,7 +45,7 @@ st.markdown("""
         background-color: #ffffff;
         padding: 15px;
         border-radius: 12px;
-        border-left: 5px solid #4db6ac;
+        border-left: 5px solid #80cbc4;
         margin-bottom: 12px;
         font-size: 0.9rem;
         box-shadow: 2px 2px 10px rgba(0,0,0,0.03);
@@ -53,40 +53,32 @@ st.markdown("""
 
     /* Buttons */
     .stButton>button {
-        background-color: #4db6ac !important;
+        background-color: #00796b !important;
         color: white !important;
         border-radius: 12px !important;
         border: none !important;
         height: 3.5em !important;
         font-weight: 700 !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(77,182,172,0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,121,107,0.2) !important;
     }
     .stButton>button:hover {
-        background-color: #00897b !important;
+        background-color: #004d40 !important;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,137,123,0.4) !important;
     }
     
     h1, h2, h3 { color: #263238; }
-    .stTabs [data-baseweb="tab-list"] { gap: 20px; }
-    .stTabs [data-baseweb="tab"] { 
-        background-color: transparent; 
-        border-radius: 10px; 
-        padding: 10px 20px;
-        font-weight: bold;
-    }
     </style>
     """, unsafe_allow_html=True)
 
 # --- UI: TOP INSTITUTIONAL HEADER ---
 st.markdown(f'''
     <div class="main-header">
-        <h3 style="margin:0; color: #00796b; letter-spacing: 2px; font-weight: 800;">ROHINI COLLEGE OF ENGINEERING AND TECHNOLOGY</h3>
-        <p style="margin:5px 0; color: #546e7a; font-size: 1.1rem;">Department of Biomedical Engineering</p>
-        <hr style="width: 50%; margin: 15px auto; border: 0.5px solid #b2dfdb;">
-        <h1 style="margin:10px 0; font-size: 2.8rem; color: #004d40;">🩸 HemaScan AI</h1>
-        <p style="color: #00796b; font-weight: 600;">Automated Non-Invasive Blood Group Diagnostic Suite</p>
+        <h3 style="margin:0; color: #004d40; letter-spacing: 2px; font-weight: 800;">M.A.M. COLLEGE OF ENGINEERING</h3>
+        <p style="margin:5px 0; color: #546e7a; font-size: 1.1rem; font-weight: 500;">Department of Artificial Intelligence and Data Science</p>
+        <hr style="width: 40%; margin: 15px auto; border: 0.5px solid #b2dfdb;">
+        <h1 style="margin:10px 0; font-size: 2.8rem; color: #00796b;">🩸 HemaScan AI</h1>
+        <p style="color: #004d40; font-weight: 600; opacity: 0.8;">Precision Non-Invasive Blood Group Diagnostic Suite</p>
     </div>
 ''', unsafe_allow_html=True)
 
@@ -97,87 +89,87 @@ with st.sidebar:
     
     st.markdown("### 👥 Research Team")
     st.markdown('<div class="info-card"><b>Aadhira Suleim A R</b><br>Final Year, B.E. BME</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-card"><b>Z. Najla</b><br>Research Contributor</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-card"><b>D. Renuga Devi</b><br>Research Contributor</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-card"><b>T. Nivetha</b><br>Research Contributor</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-card"><b>G. Aswinekha</b><br>Research Contributor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-card"><b>Z. Najla</b><br>Core AI Contributor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-card"><b>D. Renuga Devi</b><br>Data Research</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-card"><b>T. Nivetha</b><br>Model Testing</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-card"><b>G. Aswinekha</b><br>Documentation</div>', unsafe_allow_html=True)
     
     st.divider()
-    st.caption("Developed for Academic Excellence 2026")
+    st.caption("M.A.M. Engineering Project 2026")
 
 # --- APP LOGIC: ENGINE LOADING ---
 @st.cache_resource
 def load_clinical_model():
-    if not os.path.exists('blood_group_model.h5'): return None, None
-    model = tf.keras.models.load_model('blood_group_model.h5', compile=False)
+    model_path = 'blood_group_model.h5'
+    if not os.path.exists(model_path): return None, None
+    model = tf.keras.models.load_model(model_path, compile=False)
     labels = open('labels.txt', 'r').read().split(',') if os.path.exists('labels.txt') else ['A', 'B', 'AB', 'O']
     return model, labels
 
 # --- MAIN TABS ---
-tab_scan, tab_tech, tab_logs = st.tabs(["🔍 Patient Analysis", "🧬 Swin-T Architecture", "📊 Clinical Logs"])
+tab_scan, tab_tech, tab_logs = st.tabs(["🔍 Patient Analysis", "🧬 AI Architecture", "📊 Diagnostic History"])
 
 with tab_scan:
     col_input, col_output = st.columns([1, 1], gap="large")
     
     with col_input:
-        st.subheader("Data Acquisition")
-        mode = st.radio("Input Selection:", ["Capture Live", "Upload Scan"], horizontal=True)
+        st.subheader("Fingerprint Acquisition")
+        mode = st.radio("Input Source:", ["Live Camera Capture", "Upload Static Scan"], horizontal=True)
         
-        file = st.camera_input("Scanner") if mode == "Capture Live" else st.file_uploader("Upload Image", type=['jpg','png','jpeg'])
+        file = st.camera_input("Scanner") if mode == "Live Camera Capture" else st.file_uploader("Upload Image", type=['jpg','png','jpeg'])
         
         if file:
             img = Image.open(file).convert('RGB')
-            st.image(img, width=320, caption="Normalized Ridge Pattern")
+            st.image(img, width=320, caption="Normalized Biometric Input")
             
-            if st.button("EXECUTE ANALYSIS"):
+            if st.button("EXECUTE DIAGNOSTIC ENGINE"):
                 model, labels = load_clinical_model()
                 if model:
-                    with st.spinner("Processing Hierarchical Windows..."):
-                        # Preprocessing
+                    with st.spinner("Extracting Hierarchical Ridge Features..."):
                         img_arr = np.array(img.resize((224, 224)), dtype=np.float32) / 255.0
                         start = time.time()
                         preds = model.predict(np.expand_dims(img_arr, axis=0), verbose=0)
                         latency = round(time.time() - start, 3)
                         
-                        # Result
                         res = labels[np.argmax(preds)]
                         conf = np.max(preds) * 100
                         st.session_state['res_data'] = {"label": res, "conf": conf, "time": latency}
                         
-                        # History
                         if 'history' not in st.session_state: st.session_state['history'] = []
-                        st.session_state['history'].append({"Time": time.strftime("%H:%M"), "Group": res, "Accuracy": f"{conf:.1f}%"})
+                        st.session_state['history'].append({"Time": time.strftime("%H:%M"), "Group": res, "Confidence": f"{conf:.1f}%"})
                 else:
-                    st.error("Engine Error: .h5 file not found on server.")
+                    st.error("System Error: AI Model weights not found on server.")
 
     with col_output:
-        st.subheader("Diagnostic Result")
+        st.subheader("Clinical Result")
         if 'res_data' in st.session_state:
             data = st.session_state['res_data']
             st.markdown(f'''
                 <div class="result-card">
-                    <p style="color: #90a4ae; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px;">Predicted Blood Type</p>
-                    <h1 style="color: #ef5350; font-size: 6rem; margin: 10px 0;">{data['label']}</h1>
-                    <p style="font-size: 1.4rem; color: #37474f;">Confidence: <b>{data['conf']:.2f}%</b></p>
-                    <p style="font-size: 0.8rem; color: #90a4ae;">Latency: {data['time']}s | Model: Swin-Transformer</p>
+                    <p style="color: #90a4ae; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px;">Identified Blood Group</p>
+                    <h1 style="color: #c62828; font-size: 6.5rem; margin: 10px 0; font-weight: 800;">{data['label']}</h1>
+                    <hr style="width: 30%; margin: 10px auto; border-top: 2px solid #ef5350;">
+                    <p style="font-size: 1.4rem; color: #37474f;">Matching Confidence: <b>{data['conf']:.2f}%</b></p>
+                    <p style="font-size: 0.8rem; color: #90a4ae;">Processing Latency: {data['time']}s | Engine: Swin-Transformer</p>
                 </div>
             ''', unsafe_allow_html=True)
-            if st.button("Reset for New Patient"):
+            if st.button("Reset for Next Patient"):
                 del st.session_state['res_data']
                 st.rerun()
         else:
-            st.info("System ready. Please provide a fingerprint scan to begin.")
+            st.info("System Standby. Please provide biometric input to initiate diagnosis.")
 
 with tab_tech:
-    st.markdown("### Swin Transformer Methodology")
-    st.write("This clinical tool utilizes a **Shifted Window (Swin) Transformer** which performs hierarchical feature extraction. Unlike standard CNNs, Swin-T maintains a global context by shifting windows between layers, making it exceptionally accurate at identifying fine minutiae in fingerprint ridges.")
+    st.markdown("### Swin Transformer (Shifted Window) Architecture")
+    st.write("This project leverages the **Swin Transformer**, a state-of-the-art Vision Transformer that uses hierarchical feature maps and shifted window partitioning. This allows the AI to capture high-resolution minutiae details from fingerprint ridges that traditional CNNs might miss.")
 
 with tab_logs:
-    st.subheader("Session Diagnostic History")
+    st.subheader("Session Log")
     if 'history' in st.session_state:
         st.dataframe(pd.DataFrame(st.session_state['history']), use_container_width=True)
+        st.download_button("Export Session Report (CSV)", pd.DataFrame(st.session_state['history']).to_csv(index=False), "hemascan_report.csv")
     else:
-        st.write("No patient records in current session.")
+        st.write("No patient records for this active session.")
 
 st.divider()
-st.caption("© 2026 Rohini College of Engineering and Technology | BME Final Year Project")
+st.caption("© 2026 M.A.M. College of Engineering | Dept of Artificial Intelligence and Data Science")
