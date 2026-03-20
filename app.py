@@ -4,7 +4,6 @@ import tensorflow as tf
 from PIL import Image
 import os
 
-# --- PAGE SETUP ---
 st.set_page_config(page_title="Blood Group Predictor", page_icon="🩸", layout="wide")
 
 st.markdown("""
@@ -26,12 +25,12 @@ with st.sidebar:
 @st.cache_resource
 def load_engine():
     if os.path.exists('blood_group_model.h5'):
-        # compile=False avoids errors with custom Swin layers
         return tf.keras.models.load_model('blood_group_model.h5', compile=False)
     return None
 
 def get_labels():
-    return ['A +ve', 'A -ve', 'B +ve', 'B -ve', 'AB +ve', 'AB -ve', 'O +ve', 'O -ve']
+    # UPDATED: Matching your labels.txt exactly
+    return ['A', 'A+', 'A-', 'AB', 'AB+', 'AB-', 'B', 'B+', 'B-', 'O', 'O+', 'O-']
 
 c1, c2 = st.columns(2)
 with c1:
@@ -43,16 +42,11 @@ with c1:
         if st.button("START AI ANALYSIS"):
             model = load_engine()
             if model:
-                with st.spinner("Processing..."):
-                    # --- THE FIX FOR VALUEERROR ---
-                    # 1. Resize to 224x224
+                with st.spinner("Swin Transformer Analyzing..."):
                     img_resized = img.resize((224, 224))
-                    # 2. Convert to array and normalize
                     img_array = np.array(img_resized).astype('float32') / 255.0
-                    # 3. Add batch dimension: shape becomes (1, 224, 224, 3)
                     img_batch = np.expand_dims(img_array, axis=0)
                     
-                    # 4. Predict
                     preds = model.predict(img_batch, verbose=0)
                     labels = get_labels()
                     
