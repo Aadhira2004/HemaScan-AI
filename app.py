@@ -4,10 +4,9 @@ import tensorflow as tf
 from PIL import Image
 import os
 
-# --- PAGE CONFIG ---
+# --- PAGE SETUP ---
 st.set_page_config(page_title="Blood Group Predictor", page_icon="🩸", layout="wide")
 
-# --- UI STYLING ---
 st.markdown("""
     <style>
     .stApp { background-color: #f5fafa; }
@@ -16,7 +15,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER ---
 st.markdown('<div class="header-box"><h2 style="color: #00695c;">M.A.M. COLLEGE OF ENGINEERING</h2><p>AI & Data Science | Blood Group Detection</p></div>', unsafe_allow_html=True)
 
 with st.sidebar:
@@ -25,14 +23,15 @@ with st.sidebar:
     st.subheader("Project Team")
     st.write("Z. Najla"); st.write("D. Renuga Devi"); st.write("T. Nivetha"); st.write("G. Aswinekha")
 
-# --- AI ENGINE ---
 @st.cache_resource
 def load_engine():
     if os.path.exists('blood_group_model.h5'):
-        model = tf.keras.models.load_model('blood_group_model.h5', compile=False)
-        labels = ['A +ve', 'A -ve', 'B +ve', 'B -ve', 'AB +ve', 'AB -ve', 'O +ve', 'O -ve']
-        return model, labels
-    return None, None
+        # compile=False avoids errors with custom Swin layers
+        return tf.keras.models.load_model('blood_group_model.h5', compile=False)
+    return None
+
+def get_labels():
+    return ['A +ve', 'A -ve', 'B +ve', 'B -ve', 'AB +ve', 'AB -ve', 'O +ve', 'O -ve']
 
 c1, c2 = st.columns(2)
 with c1:
@@ -42,18 +41,29 @@ with c1:
         img = Image.open(file).convert('RGB')
         st.image(img, width=250)
         if st.button("START AI ANALYSIS"):
-            model, labels = load_engine()
+            model = load_engine()
             if model:
-                img_arr = np.array(img.resize((224, 224)), dtype=np.float32) / 255.0
-                preds = model.predict(np.expand_dims(img_arr, axis=0), verbose=0)
-                st.session_state['res_label'] = labels[np.argmax(preds)]
-                st.session_state['res_conf'] = np.max(preds) * 100
+                with st.spinner("Processing..."):
+                    # --- THE FIX FOR VALUEERROR ---
+                    # 1. Resize to 224x224
+                    img_resized = img.resize((224, 224))
+                    # 2. Convert to array and normalize
+                    img_array = np.array(img_resized).astype('float32') / 255.0
+                    # 3. Add batch dimension: shape becomes (1, 224, 224, 3)
+                    img_batch = np.expand_dims(img_array, axis=0)
+                    
+                    # 4. Predict
+                    preds = model.predict(img_batch, verbose=0)
+                    labels = get_labels()
+                    
+                    st.session_state['res_label'] = labels[np.argmax(preds)]
+                    st.session_state['res_conf'] = np.max(preds) * 100
+            else:
+                st.error("Model file not found.")
 
 with c2:
     st.subheader("Detection Result")
     if 'res_label' in st.session_state:
-        # DYNAMIC RESULT: This only changes when the model predicts!
         st.markdown(f'<div class="result-box"><h1 style="color: #b71c1c; font-size: 70px;">{st.session_state["res_label"]}</h1><p>Confidence: {st.session_state["res_conf"]:.2f}%</p></div>', unsafe_allow_html=True)
     else:
         st.info("Awaiting fingerprint scan...")
-
