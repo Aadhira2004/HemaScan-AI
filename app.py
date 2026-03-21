@@ -4,10 +4,8 @@ import tensorflow as tf
 from PIL import Image
 import os
 
-# --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Blood Group Predictor", page_icon="🩸", layout="wide")
 
-# --- 2. THE RESET LOGIC (The Fix for 'Same Output') ---
 if 'res_label' not in st.session_state:
     st.session_state['res_label'] = None
     st.session_state['res_conf'] = 0
@@ -27,24 +25,17 @@ c1, c2 = st.columns(2)
 with c1:
     st.subheader("1. Upload Fingerprint")
     file = st.file_uploader("Choose a clear JPG/PNG", type=['jpg','png','jpeg'])
-    
     if file:
         img = Image.open(file).convert('RGB')
-        st.image(img, width=250, caption="Uploaded Scan")
-        
+        st.image(img, width=250)
         if st.button("RUN AI ANALYSIS"):
             model = load_engine()
             if model:
-                # Process
                 img_resized = img.resize((224, 224))
                 img_array = np.array(img_resized).astype('float32') / 255.0
                 img_batch = np.expand_dims(img_array, axis=0)
-                
-                # Predict
                 preds = model.predict(img_batch, verbose=0)
                 labels = get_labels()
-                
-                # Update Session for THIS user only
                 st.session_state['res_label'] = labels[np.argmax(preds)]
                 st.session_state['res_conf'] = np.max(preds) * 100
             else:
@@ -52,14 +43,11 @@ with c1:
 
 with c2:
     st.subheader("2. AI Prediction")
-    # Only show if a prediction has actually been made in THIS session
     if st.session_state['res_label']:
         st.success(f"Result: {st.session_state['res_label']}")
         st.info(f"Confidence: {st.session_state['res_conf']:.2f}%")
-        
         if st.button("Scan Another Fingerprint"):
             st.session_state['res_label'] = None
             st.rerun()
     else:
         st.warning("Awaiting fingerprint upload...")
-
